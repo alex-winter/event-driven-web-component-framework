@@ -1,7 +1,7 @@
-export async function patchDOM(
+export function patchDOM(
     oldNode: Node,
     newNode: Node
-): Promise<void> {
+): void {
     if (!oldNode || !newNode)
 
         // Replace if node types or node names differ
