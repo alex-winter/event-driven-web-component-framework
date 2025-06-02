@@ -132,6 +132,11 @@
 class CounterComponent extends Component {
   private count = 0
 
+  protected listeners = {
+    '#increment:click': this.handleIncrementClick,
+    '#decrement:click': this.handleDecrementClick,
+  }
+
   protected build(): HTMLElement {
     const container = document.createElement('div')
     container.innerHTML = `
@@ -142,15 +147,14 @@ class CounterComponent extends Component {
     return container
   }
 
-  protected listeners = {
-    '#increment:click': function () {
-      this.count++
-      this.patch()
-    },
-    '#decrement:click': function () {
-      this.count--
-      this.patch()
-    },
+  private handleIncrementClick(): void {
+    this.count++
+    this.patch()
+  }
+
+  private handleDecrementClick(): void {
+    this.count--
+    this.patch()
   }
 }
 
@@ -196,27 +200,31 @@ Events.emit('custom:event', { foo: 'bar' });</code></pre>
             <h2>Advanced Example: Todo List</h2>
             <pre><code class="language-ts">class TodoComponent extends Component {
   private todos: string[] = [];
-
+  protected listeners = {
+    '#add-button:click': this.handleAddButtonClick,
+  };
   protected build(): HTMLElement {
-    const container = document.createElement('div');
+    const container = document.createElement('div')
     container.innerHTML = `
       &lt;input id="todo-input" placeholder="Add todo" />
       &lt;button id="add-button">Add&lt;/button>
       &lt;ul>${this.todos.map(t => `&lt;li>${t}&lt;/li>`).join('')}&lt;/ul>
-    `;
-    return container;
+    `
+
+    return container
   }
 
-  protected listeners = {
-    '#add-button:click': function () {
-      const input = this.findOne('#todo-input');
-      if (input?.value.trim()) {
-        this.todos.push(input.value.trim());
-        input.value = '';
-        this.patch();
-      }
-    },
-  };
+  private handleAddButtonClick(): void {
+    const input = this.findOne('#todo-input')
+    
+    if (input?.value.trim()) {
+        this.todos.push(input.value.trim())
+        
+        input.value = ''
+        
+        this.patch()
+    }
+  }
 }
 
 customElements.define('todo-component', TodoComponent);</code></pre>
