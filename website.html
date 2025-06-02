@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SlimComponent Docs</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            display: flex;
+        }
+
+        nav {
+            width: 240px;
+            background: #222;
+            color: white;
+            height: 100vh;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+        }
+
+        nav h2 {
+            color: #0ff;
+            font-size: 1.5rem;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav li {
+            margin: 1rem 0;
+        }
+
+        nav a {
+            color: #ccc;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            color: white;
+        }
+
+        main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #1a1a1a;
+        }
+
+        pre {
+            background: #1e1e1e;
+            padding: 1em;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <h2>SlimComponent</h2>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#getting-started">Getting Started</a></li>
+            <li><a href="#example-counter">Counter Example</a></li>
+            <li><a href="#api-reference">API Reference</a></li>
+            <li><a href="#event-system">Event System</a></li>
+            <li><a href="#advanced-example">Todo Example</a></li>
+            <li><a href="#conclusion">Conclusion</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h1>SlimComponent Documentation</h1>
+
+        <div class="section" id="overview">
+            <h2>Overview</h2>
+            <p><strong>SlimComponent</strong> is a minimalist, event-driven web component framework built on native
+                APIs. Features include:</p>
+            <ul>
+                <li>Encapsulated Shadow DOM</li>
+                <li>Declarative Event Listeners</li>
+                <li>External Event Bus</li>
+                <li>Scoped Global Stylesheets</li>
+                <li>Efficient DOM Patching</li>
+            </ul>
+        </div>
+
+        <div class="section" id="getting-started">
+            <h2>Getting Started</h2>
+            <p>There is no install as of now, simply just copy the files into your project</p>
+        </div>
+
+        <div class="section" id="example-counter">
+            <h2>Example: Counter Component</h2>
+            <pre><code class="language-ts">import { Component } from 'slim-component-framework';
+
+class CounterComponent extends Component {
+  private count = 0;
+
+  protected build(): HTMLElement {
+    const container = document.createElement('div');
+    container.innerHTML = `
+      &lt;button id="decrement">-</button>
+      &lt;span id="count">${this.count}&lt;/span>
+      &lt;button id="increment">+&lt;/button>
+    `;
+    return container;
+  }
+
+  protected listeners = {
+    '#increment:click': function () {
+      this.count++;
+      this.patch();
+    },
+    '#decrement:click': function () {
+      this.count--;
+      this.patch();
+    },
+  };
+
+  protected afterPatch(): void {
+    const countSpan = this.findOne('#count');
+    if (countSpan) countSpan.textContent = this.count.toString();
+  }
+}
+
+customElements.define('counter-component', CounterComponent);</code></pre>
+            <p>Usage:</p>
+            <pre><code class="language-html">&lt;counter-component&gt;&lt;/counter-component&gt;</code></pre>
+        </div>
+
+        <div class="section" id="api-reference">
+            <h2>API Reference</h2>
+            <ul>
+                <li><code>build()</code> - Create and return your component DOM</li>
+                <li><code>setup()</code> - Optional async logic before build</li>
+                <li><code>afterBuild()</code> - Lifecycle hook after initial render</li>
+                <li><code>afterPatch()</code> - Lifecycle hook after patching</li>
+                <li><code>css()</code> - Return string of scoped styles</li>
+                <li><code>patch()</code> - Update component efficiently</li>
+                <li><code>destroy()</code> - Remove and clean up component</li>
+                <li><code>findOne(selector)</code> - Query one element from Shadow DOM</li>
+                <li><code>findAll(selector)</code> - Query all matching elements</li>
+            </ul>
+        </div>
+
+        <div class="section" id="event-system">
+            <h2>Event System</h2>
+            <h3>Internal Listeners</h3>
+            <pre><code class="language-ts">protected listeners = {
+  '#submit:click': function () {
+    this.handleSubmit();
+  }
+};</code></pre>
+
+            <h3>External Events</h3>
+            <pre><code class="language-ts">protected externalListeners = {
+  'example-event-name': this.handleExampleEvent,
+};
+
+// Emitting
+Events.emit('custom:event', { foo: 'bar' });</code></pre>
+        </div>
+
+        <div class="section" id="advanced-example">
+            <h2>Advanced Example: Todo List</h2>
+            <pre><code class="language-ts">class TodoComponent extends Component {
+  private todos: string[] = [];
+
+  protected build(): HTMLElement {
+    const container = document.createElement('div');
+    container.innerHTML = `
+      &lt;input id="todo-input" placeholder="Add todo" />
+      &lt;button id="add-button">Add&lt;/button>
+      &lt;ul>${this.todos.map(t => `&lt;li>${t}&lt;/li>`).join('')}&lt;/ul>
+    `;
+    return container;
+  }
+
+  protected listeners = {
+    '#add-button:click': function () {
+      const input = this.findOne('#todo-input');
+      if (input?.value.trim()) {
+        this.todos.push(input.value.trim());
+        input.value = '';
+        this.patch();
+      }
+    },
+  };
+}
+
+customElements.define('todo-component', TodoComponent);</code></pre>
+        </div>
+
+        <div class="section" id="conclusion">
+            <h2>Conclusion</h2>
+            <p>SlimComponent is a clean and efficient way to build modern UI components with native web APIs. It’s
+                perfect for projects that value speed, modularity, and simplicity.</p>
+        </div>
+
+        <footer>
+            Built with ❤️ for modern web developers.
+        </footer>
+    </main>
+</body>
+
+</html>
