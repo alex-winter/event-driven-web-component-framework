@@ -130,32 +130,27 @@
             <pre><code class="language-ts">import { Component } from 'slim-component-framework';
 
 class CounterComponent extends Component {
-  private count = 0;
+  private count = 0
 
   protected build(): HTMLElement {
-    const container = document.createElement('div');
+    const container = document.createElement('div')
     container.innerHTML = `
       &lt;button id="decrement">-</button>
       &lt;span id="count">${this.count}&lt;/span>
       &lt;button id="increment">+&lt;/button>
-    `;
-    return container;
+    `
+    return container
   }
 
   protected listeners = {
     '#increment:click': function () {
-      this.count++;
-      this.patch();
+      this.count++
+      this.patch()
     },
     '#decrement:click': function () {
-      this.count--;
-      this.patch();
+      this.count--
+      this.patch()
     },
-  };
-
-  protected afterPatch(): void {
-    const countSpan = this.findOne('#count');
-    if (countSpan) countSpan.textContent = this.count.toString();
   }
 }
 
