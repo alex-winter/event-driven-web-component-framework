@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "target": "esnext",
+        "module": "commonjs",
+        "outDir": "./public/dist",
+        "baseUrl": "src",
+        "sourceMap": true,
+        "strict": true,
+        "lib": [
+            "dom",
+            "es6"
+        ],
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true
+    },
+    "include": [
+        "src/**/*",
+        "config.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
