@@ -1,0 +1,11 @@
+{
+  "name": "event-driven-web-components",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "Alex Winter",
+  "license": "ISC",
+  "description": ""
+}
