@@ -63,9 +63,7 @@ export abstract class Component extends HTMLElement {
                 }
             }
 
-            if (typeof (this as any).setup === 'function') {
-                await (this as any).setup()
-            }
+            await this.setup()
 
             const css = this.css().trim()
             if (css.length) {
