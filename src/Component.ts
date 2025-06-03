@@ -1,12 +1,12 @@
-import { Events } from 'Events'
-import { isJSON } from 'is-json'
-import { patchDOM } from 'patch-dom'
+import { Events } from './Events'
+import { isJSON } from './is-json'
+import { patchDOM } from './patch-dom'
 import { config } from '../config'
-import { Listeners } from 'types/Listeners'
-import { ExternalListeners } from 'types/ExternalListeners'
-import { ExternalHandler } from 'types/ExternalHandler'
-import { Listener } from 'types/Listener'
-import { ParsedDataset } from 'types/ParsedDataset'
+import { Listeners } from './types/Listeners'
+import { ExternalListeners } from './types/ExternalListeners'
+import { ExternalHandler } from './types/ExternalHandler'
+import { Listener } from './types/Listener'
+import { ParsedDataset } from './types/ParsedDataset'
 
 export abstract class Component extends HTMLElement {
     private static readonly globalStylesheets: string[] = config['globalStyleSheets']

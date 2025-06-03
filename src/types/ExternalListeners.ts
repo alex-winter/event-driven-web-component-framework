@@ -1,4 +1,4 @@
-import { EventFn } from 'types/EventFn'
+import { EventFn } from './EventFn'
 
 export type ExternalListeners = {
     [key: string]: EventFn

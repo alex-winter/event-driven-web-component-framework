@@ -1,4 +1,4 @@
-import { EventFn } from 'types/EventFn'
+import { EventFn } from './types/EventFn'
 
 export class Events {
     constructor() {
