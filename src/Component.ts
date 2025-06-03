@@ -141,6 +141,11 @@ export abstract class Component extends HTMLElement {
                         type: eventType,
                         handler: boundHandler,
                     })
+                    console.log({
+                        element,
+                        type: eventType,
+                        handler: boundHandler,
+                    })
                 }
             }
         }
