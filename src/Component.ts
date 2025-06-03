@@ -64,6 +64,8 @@ export abstract class Component extends HTMLElement {
                 }
             }
 
+            await this.setup()
+
             const css = this.css().trim()
             if (css.length) {
                 const sheet = new CSSStyleSheet()
