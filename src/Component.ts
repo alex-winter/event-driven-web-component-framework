@@ -53,6 +53,7 @@ export abstract class Component extends HTMLElement {
         }
 
         const build = async () => {
+            console.log('start build function')
             if (this.globalStylesheets) {
                 for (let href of this.globalStylesheets) {
                     const link = document.createElement('link')
@@ -64,7 +65,12 @@ export abstract class Component extends HTMLElement {
                 }
             }
 
+            console.log('start setup')
+
             await this.setup()
+
+            console.log('end setup')
+
 
             const css = this.css().trim()
             if (css.length) {
@@ -72,6 +78,7 @@ export abstract class Component extends HTMLElement {
                 sheet.replaceSync(css)
                 this.shadow.adoptedStyleSheets = [sheet]
             }
+            console.log('start build and append')
 
             this.shadow.appendChild(
                 this.build()
@@ -107,7 +114,12 @@ export abstract class Component extends HTMLElement {
         })
         this.attachedListeners = []
 
+        console.log('removed listeners')
+
+
         const listeners = (this as any).listeners as Listeners | undefined
+        console.log(listeners)
+
         if (listeners) {
             const listenerKeys = Object.keys(listeners)
 
@@ -115,6 +127,9 @@ export abstract class Component extends HTMLElement {
                 const eventFn = listeners[key]
                 const [selector, eventType] = key.split(':')
                 const elements = this.findAll(selector)
+
+                console.log('set the listener')
+
 
                 for (let element of elements) {
                     const boundHandler = eventFn.bind(this)
