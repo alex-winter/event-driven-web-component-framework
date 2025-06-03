@@ -52,7 +52,7 @@ export abstract class Component extends HTMLElement {
                 : value
         }
 
-        async () => {
+        const build = async () => {
             if (this.globalStylesheets) {
                 for (let href of this.globalStylesheets) {
                     const link = document.createElement('link')
@@ -79,6 +79,8 @@ export abstract class Component extends HTMLElement {
             this.setExternalListeners()
             this.afterBuild()
         }
+
+        build()
     }
 
     protected patch(): void {
