@@ -9,7 +9,7 @@ import { Listener } from './types/Listener'
 import { ParsedDataset } from './types/ParsedDataset'
 
 export abstract class Component extends HTMLElement {
-    protected readonly globalStylesheets: string[] = []
+    protected readonly globalStylesheets!: string[]
 
     protected readonly parsedDataset: ParsedDataset = {}
     protected readonly listeners: Listeners = {}
@@ -53,13 +53,15 @@ export abstract class Component extends HTMLElement {
         }
 
         async () => {
-            for (let href of this.globalStylesheets) {
-                const link = document.createElement('link')
+            if (this.globalStylesheets) {
+                for (let href of this.globalStylesheets) {
+                    const link = document.createElement('link')
 
-                link.rel = 'stylesheet'
-                link.href = href
+                    link.rel = 'stylesheet'
+                    link.href = href
 
-                this.shadow.append(link)
+                    this.shadow.append(link)
+                }
             }
 
             const css = this.css().trim()
