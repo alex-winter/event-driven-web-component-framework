@@ -27,10 +27,6 @@ export abstract class Component extends HTMLElement {
 
     protected abstract build(): HTMLElement
 
-    protected async setup(): Promise<void> {
-        console.log('base setup')
-    }
-
     protected afterBuild(): void { }
 
     protected afterPatch(): void { }
@@ -67,9 +63,9 @@ export abstract class Component extends HTMLElement {
                 }
             }
 
-            console.log('start setup', this.setup)
-
-            await this.setup()
+            if (typeof (this as any).setup === 'function') {
+                await (this as any).setup()
+            }
 
             console.log('end setup')
 
