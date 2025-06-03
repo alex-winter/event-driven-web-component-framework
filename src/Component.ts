@@ -1,7 +1,6 @@
 import { Events } from './Events'
 import { isJSON } from './is-json'
 import { patchDOM } from './patch-dom'
-import { config } from '../config'
 import { Listeners } from './types/Listeners'
 import { ExternalListeners } from './types/ExternalListeners'
 import { ExternalHandler } from './types/ExternalHandler'
@@ -27,6 +26,8 @@ export abstract class Component extends HTMLElement {
 
     protected abstract build(): HTMLElement
 
+    protected async setup(): Promise<void> { }
+
     protected afterBuild(): void { }
 
     protected afterPatch(): void { }
@@ -40,12 +41,6 @@ export abstract class Component extends HTMLElement {
     }
 
     protected connectedCallback(): void {
-        console.log(
-            typeof (this as any).setup === 'function'
-        )
-        console.log((this as any).setup)
-
-
         const datasetKeys = Object.keys(this.dataset)
 
         for (let key of datasetKeys) {
@@ -57,7 +52,6 @@ export abstract class Component extends HTMLElement {
         }
 
         const build = async () => {
-            console.log('start build function')
             if (this.globalStylesheets) {
                 for (let href of this.globalStylesheets) {
                     const link = document.createElement('link')
@@ -73,16 +67,12 @@ export abstract class Component extends HTMLElement {
                 await (this as any).setup()
             }
 
-            console.log('end setup')
-
-
             const css = this.css().trim()
             if (css.length) {
                 const sheet = new CSSStyleSheet()
                 sheet.replaceSync(css)
                 this.shadow.adoptedStyleSheets = [sheet]
             }
-            console.log('start build and append')
 
             this.shadow.appendChild(
                 this.build()
@@ -113,16 +103,12 @@ export abstract class Component extends HTMLElement {
     }
 
     protected async setListeners(): Promise<void> {
-        this.attachedListeners.forEach(({ element, type, handler }) => {
-            element.removeEventListener(type, handler)
-        })
+        for (const listener of this.attachedListeners) {
+            listener.element.removeEventListener(listener.type, listener.handler)
+        }
         this.attachedListeners = []
 
-        console.log('removed listeners')
-
-
         const listeners = (this as any).listeners as Listeners | undefined
-        console.log(listeners)
 
         if (listeners) {
             const listenerKeys = Object.keys(listeners)
@@ -132,20 +118,12 @@ export abstract class Component extends HTMLElement {
                 const [selector, eventType] = key.split(':')
                 const elements = this.findAll(selector)
 
-                console.log(elements)
-
-
                 for (let element of elements) {
                     const boundHandler = eventFn.bind(this)
 
                     element.addEventListener(eventType, boundHandler)
 
                     this.attachedListeners.push({
-                        element,
-                        type: eventType,
-                        handler: boundHandler,
-                    })
-                    console.log({
                         element,
                         type: eventType,
                         handler: boundHandler,
