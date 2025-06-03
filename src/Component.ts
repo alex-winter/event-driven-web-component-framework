@@ -27,7 +27,9 @@ export abstract class Component extends HTMLElement {
 
     protected abstract build(): HTMLElement
 
-    protected async setup(): Promise<void> { }
+    protected async setup(): Promise<void> {
+        console.log('base setup')
+    }
 
     protected afterBuild(): void { }
 
