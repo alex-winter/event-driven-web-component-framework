@@ -122,12 +122,15 @@
 
         <div class="section" id="getting-started">
             <h2>Getting Started</h2>
-            <p>There is no install as of now, simply just copy the files into your project</p>
+            <p>You can install <strong>SlimComponent</strong> via npm:</p>
+            <pre><code class="language-bash">npm i event-driven-web-components</code></pre>
+            <p>Then import the core functionality into your project:</p>
+            <pre><code class="language-ts">import { Component } from 'event-driven-web-components/dist/Component';</code></pre>
         </div>
 
         <div class="section" id="example-counter">
             <h2>Example: Counter Component</h2>
-            <pre><code class="language-ts">import { Component } from 'slim-component-framework';
+            <pre><code class="language-ts">import { Component } from 'event-driven-web-components/dist/Component';
 
 class CounterComponent extends Component {
   private count = 0
@@ -182,10 +185,8 @@ customElements.define('counter-component', CounterComponent);</code></pre>
             <h2>Event System</h2>
             <h3>Internal Listeners</h3>
             <pre><code class="language-ts">protected listeners = {
-  '#submit:click': function () {
-    this.handleSubmit();
-  }
-};</code></pre>
+  '#submit:click': this.handleSubmit,
+}</code></pre>
 
             <h3>External Events</h3>
             <pre><code class="language-ts">protected externalListeners = {
@@ -193,7 +194,7 @@ customElements.define('counter-component', CounterComponent);</code></pre>
 };
 
 // Emitting
-Events.emit('custom:event', { foo: 'bar' });</code></pre>
+Events.emit('example-event-name', { foo: 'bar' });</code></pre>
         </div>
 
         <div class="section" id="advanced-example">
