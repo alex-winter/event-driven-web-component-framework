@@ -9,7 +9,7 @@ import { Listener } from './types/Listener'
 import { ParsedDataset } from './types/ParsedDataset'
 
 export abstract class Component extends HTMLElement {
-    private readonly globalStylesheets: string[] = []
+    protected readonly globalStylesheets: string[] = []
 
     protected readonly parsedDataset: ParsedDataset = {}
     protected readonly listeners: Listeners = {}
