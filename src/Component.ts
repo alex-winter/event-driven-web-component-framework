@@ -65,7 +65,7 @@ export abstract class Component extends HTMLElement {
                 }
             }
 
-            console.log('start setup')
+            console.log('start setup', this.setup)
 
             await this.setup()
 
