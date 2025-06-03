@@ -9,7 +9,7 @@ import { Listener } from './types/Listener'
 import { ParsedDataset } from './types/ParsedDataset'
 
 export abstract class Component extends HTMLElement {
-    private static readonly globalStylesheets: string[] = config['globalStyleSheets']
+    private readonly globalStylesheets: string[] = []
 
     protected readonly parsedDataset: ParsedDataset = {}
     protected readonly listeners: Listeners = {}
@@ -53,7 +53,7 @@ export abstract class Component extends HTMLElement {
         }
 
         async () => {
-            for (let href of Component.globalStylesheets) {
+            for (let href of this.globalStylesheets) {
                 const link = document.createElement('link')
 
                 link.rel = 'stylesheet'
