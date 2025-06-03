@@ -40,6 +40,12 @@ export abstract class Component extends HTMLElement {
     }
 
     protected connectedCallback(): void {
+        console.log(
+            typeof (this as any).setup === 'function'
+        )
+        console.log((this as any).setup)
+
+
         const datasetKeys = Object.keys(this.dataset)
 
         for (let key of datasetKeys) {
