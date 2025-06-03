@@ -128,7 +128,7 @@ export abstract class Component extends HTMLElement {
                 const [selector, eventType] = key.split(':')
                 const elements = this.findAll(selector)
 
-                console.log('set the listener')
+                console.log(elements)
 
 
                 for (let element of elements) {
