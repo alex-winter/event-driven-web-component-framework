@@ -1,13 +1,11 @@
 import { Events } from './Events'
 import { isJSON } from './is-json'
 import { patchDOM } from './patch-dom'
-import type {
-    Listeners,
-    ExternalListeners,
-    ExternalHandler,
-    Listener,
-    ParsedDataset,
-} from './types'
+import { ExternalHandler } from './types/ExternalHandler'
+import { ExternalListeners } from './types/ExternalListeners'
+import { Listener } from './types/Listener'
+import { Listeners } from './types/Listeners'
+import { ParsedDataset } from './types/ParsedDataset'
 
 export class ComponentPrototype {
     private readonly anchor: HTMLElement
@@ -31,7 +29,6 @@ export class ComponentPrototype {
         this.shadow = shadowRoot
     }
 
-    // These are intended to be overridden or assigned by the outer Component
     public setup: () => Promise<void> = async () => { }
     public build: () => HTMLElement = () => {
         throw new Error('You must override the build() method')
@@ -42,10 +39,10 @@ export class ComponentPrototype {
 
     public async connectedCallback(): Promise<void> {
         for (const key of Object.keys(this.anchor.dataset)) {
-            const value = this.anchor.dataset[key]
+            const value = this.anchor.dataset[key] as string
             this.parsedDataset[key] = isJSON(value)
                 ? JSON.parse(value as string)
-                : value as string
+                : value
         }
 
         if (this.globalStylesheets) {
@@ -126,6 +123,7 @@ export class ComponentPrototype {
 
         for (const key of Object.keys(this.externalListeners)) {
             const boundHandler = this.externalListeners[key].bind(this.anchor)
+
             Events.listen(key, boundHandler)
 
             this.externalHandlers.push({
