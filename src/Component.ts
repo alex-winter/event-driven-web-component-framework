@@ -1,174 +1,56 @@
-import { Events } from './Events'
-import { isJSON } from './is-json'
-import { patchDOM } from './patch-dom'
-import { Listeners } from './types/Listeners'
-import { ExternalListeners } from './types/ExternalListeners'
-import { ExternalHandler } from './types/ExternalHandler'
-import { Listener } from './types/Listener'
-import { ParsedDataset } from './types/ParsedDataset'
+import { ComponentPrototype } from './ComponentPrototype'
 
 export abstract class Component extends HTMLElement {
-    protected readonly globalStylesheets: string[] | undefined = undefined
-
-    protected readonly parsedDataset: ParsedDataset = {}
-    protected readonly listeners: Listeners = {}
-    protected readonly externalListeners: ExternalListeners = {}
-
-    private readonly shadow: ShadowRoot
-    private externalHandlers: ExternalHandler[] = []
-    private attachedListeners: Listener[] = []
+    #delegate: ComponentPrototype
 
     constructor() {
         super()
+        const shadow = this.attachShadow({ mode: 'open' })
 
-        this.shadow = this.attachShadow({ mode: 'open' })
-    }
+        this.#delegate = new ComponentPrototype(this)
 
-    protected abstract build(): HTMLElement
+        this.#delegate.setup = this.setup.bind(this)
+        this.#delegate.build = this.build.bind(this)
+        this.#delegate.css = this.css.bind(this)
+        this.#delegate.afterBuild = this.afterBuild.bind(this)
+        this.#delegate.afterPatch = this.afterPatch.bind(this)
 
-    protected async setup(): Promise<void> { }
+        if (this.globalStylesheets) {
+            this.#delegate.globalStylesheets = this.globalStylesheets
+        }
 
-    protected afterBuild(): void { }
+        if ((this as any).listeners) {
+            this.#delegate.listeners = (this as any).listeners
+        }
 
-    protected afterPatch(): void { }
-
-    protected css(): string {
-        return ''
-    }
-
-    public destroy() {
-        this.shadow.host.remove()
+        if ((this as any).externalListeners) {
+            this.#delegate.externalListeners = (this as any).externalListeners
+        }
     }
 
     protected connectedCallback(): void {
         if (this.isConnected) {
-            const datasetKeys = Object.keys(this.dataset)
-
-            for (let key of datasetKeys) {
-                const value = this.dataset[key]
-
-                this.parsedDataset[key] = isJSON(value)
-                    ? JSON.parse(value as string)
-                    : value
-            }
-
-            const build = async () => {
-                if (this.globalStylesheets) {
-                    for (let href of this.globalStylesheets) {
-                        const link = document.createElement('link')
-
-                        link.rel = 'stylesheet'
-                        link.href = href
-
-                        this.shadow.append(link)
-                    }
-                }
-
-                await this.setup()
-
-                const css = this.css().trim()
-                if (css.length) {
-                    const sheet = new CSSStyleSheet()
-                    sheet.replaceSync(css)
-                    this.shadow.adoptedStyleSheets = [sheet]
-                }
-
-                this.shadow.appendChild(
-                    this.build()
-                )
-
-                this.setListeners()
-                this.setExternalListeners()
-                this.afterBuild()
-            }
-
-            build()
+            void this.#delegate.connectedCallback()
         }
     }
 
     protected disconnectedCallback(): void {
-        this.destroy()
+        this.#delegate.disconnectedCallback()
     }
 
     protected patch(): void {
-        const firstChild = Array.from(this.shadow.children)
-            .filter(child => child.tagName !== 'LINK')
-
-        if (firstChild.length > 1) {
-            throw new Error('There should only be one root child of the shadow dom')
-        }
-
-        patchDOM(firstChild[0], this.build())
-
-        this.setListeners()
-        this.setExternalListeners()
-
-        this.afterPatch()
+        this.#delegate.patch()
     }
 
-    protected async setListeners(): Promise<void> {
-        for (const listener of this.attachedListeners) {
-            listener.element.removeEventListener(listener.type, listener.handler)
-        }
-        this.attachedListeners = []
-
-        const listeners = (this as any).listeners as Listeners | undefined
-
-        if (listeners) {
-            const listenerKeys = Object.keys(listeners)
-
-            for (let key of listenerKeys) {
-                const eventFn = listeners[key]
-                const [selector, eventType] = key.split(':')
-                const elements = this.findAll(selector)
-
-                for (let element of elements) {
-                    const boundHandler = eventFn.bind(this)
-
-                    element.addEventListener(eventType, boundHandler)
-
-                    this.attachedListeners.push({
-                        element,
-                        type: eventType,
-                        handler: boundHandler,
-                    })
-                }
-            }
-        }
+    protected abstract build(): HTMLElement
+    protected async setup(): Promise<void> { }
+    protected afterBuild(): void { }
+    protected afterPatch(): void { }
+    protected css(): string {
+        return ''
     }
 
-    protected async setExternalListeners(): Promise<void> {
-        for (let handler of this.externalHandlers) {
-            Events.unlisten(handler.key, handler.handler)
-        }
-
-        this.externalHandlers = []
-
-        const listeners = (this as any).externalListeners as ExternalListeners | undefined
-        if (listeners) {
-            const listenerKeys = Object.keys(listeners)
-
-            for (let key of listenerKeys) {
-                const eventFn = listeners[key]
-                const boundHandler = eventFn.bind(this) as EventListener
-
-                Events.listen(key, boundHandler)
-
-                this.externalHandlers.push({
-                    key,
-                    handler: boundHandler,
-                })
-            }
-        }
-    }
-
-    protected findOne<T = HTMLElement>(query: string): T | null {
-        return this.shadow.querySelector(query) as T | null
-    }
-
-    protected findAll<T = HTMLElement[]>(query: string): T {
-        return Array.from(
-            this.shadow.querySelectorAll(query)
-        ) as T
+    protected get globalStylesheets(): string[] | undefined {
+        return undefined
     }
 }
