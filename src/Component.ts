@@ -46,11 +46,11 @@ export abstract class Component extends HTMLElement {
         this.#delegate.patch()
     }
 
-    public findOne(query: string): HTMLElement | null {
+    public findOne<T extends HTMLElement = HTMLElement>(query: string): T | null {
         return this.#delegate.findOne(query)
     }
 
-    public findAll(query: string): HTMLElement[] {
+    public findAll<T extends HTMLElement = HTMLElement>(query: string): T[] {
         return this.#delegate.findAll(query)
     }
 
