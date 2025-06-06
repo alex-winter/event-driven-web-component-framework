@@ -1,9 +1,10 @@
 import { ComponentPrototype } from './ComponentPrototype'
+import { ParsedDataset } from './types/ParsedDataset'
 
 export abstract class Component extends HTMLElement {
     #delegate: ComponentPrototype
 
-    protected parsedDataset = {}
+    protected parsedDataset!: ParsedDataset
 
     constructor() {
         super()
