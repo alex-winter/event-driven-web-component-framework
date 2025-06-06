@@ -1,6 +1,4 @@
 import { ComponentPrototype } from './ComponentPrototype'
-import { ExternalListeners } from './types/ExternalListeners'
-import { Listeners } from './types/Listeners'
 import { ParsedDataset } from './types/ParsedDataset'
 
 export abstract class Component extends HTMLElement {
