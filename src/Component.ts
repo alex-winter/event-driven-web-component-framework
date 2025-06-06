@@ -4,7 +4,7 @@ import { ParsedDataset } from './types/ParsedDataset'
 export abstract class Component extends HTMLElement {
     #delegate: ComponentPrototype
 
-    protected parsedDataset!: ParsedDataset
+    public parsedDataset: ParsedDataset = {}
 
     constructor() {
         super()
@@ -35,6 +35,7 @@ export abstract class Component extends HTMLElement {
     protected connectedCallback(): void {
         if (this.isConnected) {
             void this.#delegate.connectedCallback()
+            this.parsedDataset = this.#delegate.parsedDataset
         }
     }
 
