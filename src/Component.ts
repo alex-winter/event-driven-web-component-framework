@@ -26,8 +26,8 @@ export abstract class Component extends HTMLElement {
 
     protected connectedCallback(): void {
         if (this.isConnected) {
-            this.#delegate.listeners = (this as any).listeners
-            this.#delegate.externalListeners = (this as any).externalListeners
+            this.#delegate.listeners = (this as any).listeners || {}
+            this.#delegate.externalListeners = (this as any).externalListeners || {}
             void this.#delegate.connectedCallback()
         }
     }
