@@ -26,8 +26,8 @@ export abstract class Component extends HTMLElement {
 
     protected connectedCallback(): void {
         if (this.isConnected) {
-            this.#delegate.listeners = this.listeners
-            this.#delegate.externalListeners = this.externalListeners
+            this.#delegate.listeners = (this as any).listeners
+            this.#delegate.externalListeners = (this as any).externalListeners
             void this.#delegate.connectedCallback()
         }
     }
@@ -62,13 +62,5 @@ export abstract class Component extends HTMLElement {
 
     public get parsedDataset(): ParsedDataset {
         return this.#delegate.parsedDataset
-    }
-
-    protected get listeners(): Listeners {
-        return {}
-    }
-
-    protected get externalListeners(): ExternalListeners {
-        return {}
     }
 }
