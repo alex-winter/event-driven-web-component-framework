@@ -19,8 +19,6 @@ export abstract class Component extends HTMLElement {
         this.#delegate.afterBuild = this.afterBuild.bind(this)
         this.#delegate.afterPatch = this.afterPatch.bind(this)
 
-        this.#delegate.parsedDataset = this.parsedDataset
-
         if (this.globalStylesheets) {
             this.#delegate.globalStylesheets = this.globalStylesheets
         }
@@ -46,6 +44,14 @@ export abstract class Component extends HTMLElement {
 
     protected patch(): void {
         this.#delegate.patch()
+    }
+
+    public findOne(query: string): HTMLElement | null {
+        return this.#delegate.findOne(query)
+    }
+
+    public findAll(query: string): HTMLElement[] {
+        return this.#delegate.findAll(query)
     }
 
     protected abstract build(): HTMLElement
