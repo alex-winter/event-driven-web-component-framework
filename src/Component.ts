@@ -1,4 +1,6 @@
 import { ComponentPrototype } from './ComponentPrototype'
+import { ExternalListeners } from './types/ExternalListeners'
+import { Listeners } from './types/Listeners'
 import { ParsedDataset } from './types/ParsedDataset'
 
 export abstract class Component extends HTMLElement {
@@ -21,14 +23,8 @@ export abstract class Component extends HTMLElement {
             this.#delegate.globalStylesheets = this.globalStylesheets
         }
 
-        if ((this as any).listeners) {
-            console.log('setting listeners')
-            this.#delegate.listeners = (this as any).listeners
-        }
-
-        if ((this as any).externalListeners) {
-            this.#delegate.externalListeners = (this as any).externalListeners
-        }
+        this.#delegate.listeners = this.listeners
+        this.#delegate.externalListeners = this.externalListeners
     }
 
     protected connectedCallback(): void {
@@ -67,5 +63,13 @@ export abstract class Component extends HTMLElement {
 
     public get parsedDataset(): ParsedDataset {
         return this.#delegate.parsedDataset
+    }
+
+    protected get listeners(): Listeners {
+        return {}
+    }
+
+    protected get externalListeners(): ExternalListeners {
+        return {}
     }
 }
