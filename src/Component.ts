@@ -22,6 +22,7 @@ export abstract class Component extends HTMLElement {
         }
 
         if ((this as any).listeners) {
+            console.log('setting listeners')
             this.#delegate.listeners = (this as any).listeners
         }
 
