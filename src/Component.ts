@@ -41,47 +41,53 @@ export abstract class Component extends HTMLElement {
     }
 
     protected connectedCallback(): void {
-        const datasetKeys = Object.keys(this.dataset)
+        if (this.isConnected) {
+            const datasetKeys = Object.keys(this.dataset)
 
-        for (let key of datasetKeys) {
-            const value = this.dataset[key]
+            for (let key of datasetKeys) {
+                const value = this.dataset[key]
 
-            this.parsedDataset[key] = isJSON(value)
-                ? JSON.parse(value as string)
-                : value
-        }
+                this.parsedDataset[key] = isJSON(value)
+                    ? JSON.parse(value as string)
+                    : value
+            }
 
-        const build = async () => {
-            if (this.globalStylesheets) {
-                for (let href of this.globalStylesheets) {
-                    const link = document.createElement('link')
+            const build = async () => {
+                if (this.globalStylesheets) {
+                    for (let href of this.globalStylesheets) {
+                        const link = document.createElement('link')
 
-                    link.rel = 'stylesheet'
-                    link.href = href
+                        link.rel = 'stylesheet'
+                        link.href = href
 
-                    this.shadow.append(link)
+                        this.shadow.append(link)
+                    }
                 }
+
+                await this.setup()
+
+                const css = this.css().trim()
+                if (css.length) {
+                    const sheet = new CSSStyleSheet()
+                    sheet.replaceSync(css)
+                    this.shadow.adoptedStyleSheets = [sheet]
+                }
+
+                this.shadow.appendChild(
+                    this.build()
+                )
+
+                this.setListeners()
+                this.setExternalListeners()
+                this.afterBuild()
             }
 
-            await this.setup()
-
-            const css = this.css().trim()
-            if (css.length) {
-                const sheet = new CSSStyleSheet()
-                sheet.replaceSync(css)
-                this.shadow.adoptedStyleSheets = [sheet]
-            }
-
-            this.shadow.appendChild(
-                this.build()
-            )
-
-            this.setListeners()
-            this.setExternalListeners()
-            this.afterBuild()
+            build()
         }
+    }
 
-        build()
+    protected disconnectedCallback(): void {
+        this.destroy()
     }
 
     protected patch(): void {
