@@ -3,9 +3,12 @@ import { ComponentPrototype } from './ComponentPrototype'
 export abstract class Component extends HTMLElement {
     #delegate: ComponentPrototype
 
+    protected parsedDataset = {}
+
     constructor() {
         super()
-        const shadow = this.attachShadow({ mode: 'open' })
+
+        this.attachShadow({ mode: 'open' })
 
         this.#delegate = new ComponentPrototype(this)
 
@@ -14,6 +17,8 @@ export abstract class Component extends HTMLElement {
         this.#delegate.css = this.css.bind(this)
         this.#delegate.afterBuild = this.afterBuild.bind(this)
         this.#delegate.afterPatch = this.afterPatch.bind(this)
+
+        this.#delegate.parsedDataset = this.parsedDataset
 
         if (this.globalStylesheets) {
             this.#delegate.globalStylesheets = this.globalStylesheets
