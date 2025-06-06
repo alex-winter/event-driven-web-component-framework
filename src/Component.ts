@@ -22,13 +22,12 @@ export abstract class Component extends HTMLElement {
         if (this.globalStylesheets) {
             this.#delegate.globalStylesheets = this.globalStylesheets
         }
-
-        this.#delegate.listeners = this.listeners
-        this.#delegate.externalListeners = this.externalListeners
     }
 
     protected connectedCallback(): void {
         if (this.isConnected) {
+            this.#delegate.listeners = this.listeners
+            this.#delegate.externalListeners = this.externalListeners
             void this.#delegate.connectedCallback()
         }
     }
