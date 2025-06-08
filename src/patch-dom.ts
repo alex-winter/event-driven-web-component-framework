@@ -57,16 +57,13 @@ export function patchDOM(
         const newChildren = Array.from(newEl.childNodes)
         const max = Math.max(oldChildren.length, newChildren.length)
 
-        for (let i = 0; i < max; i++) {
-            const oldChild = oldChildren[i]
-            const newChild = newChildren[i]
-
-            if (!oldChild && newChild) {
-                oldEl.appendChild(newChild.cloneNode(true))
-            } else if (oldChild && !newChild) {
-                oldEl.removeChild(oldChild)
-            } else if (oldChild && newChild) {
-                patchDOM(oldChild, newChild)
+        if (oldChildren.length !== newChildren.length ||
+            !oldChildren.every((child, i) => child.nodeName === newChildren[i]?.nodeName)) {
+            oldEl.innerHTML = ''
+            newChildren.forEach(child => oldEl.appendChild(child.cloneNode(true)))
+        } else {
+            for (let i = 0; i < oldChildren.length; i++) {
+                patchDOM(oldChildren[i], newChildren[i])
             }
         }
     }
