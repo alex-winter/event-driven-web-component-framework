@@ -52,10 +52,13 @@ export function patchDOM(
             }
         }
 
+        if ((oldEl as HTMLInputElement).value !== (newEl as HTMLInputElement).value) {
+            (oldEl as HTMLInputElement).value = (newEl as HTMLInputElement).value
+        }
+
         // Recursively patch children, skipping custom elements
         const oldChildren = Array.from(oldEl.childNodes)
         const newChildren = Array.from(newEl.childNodes)
-        const max = Math.max(oldChildren.length, newChildren.length)
 
         if (oldChildren.length !== newChildren.length ||
             !oldChildren.every((child, i) => child.nodeName === newChildren[i]?.nodeName)) {
