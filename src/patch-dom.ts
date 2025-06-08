@@ -2,18 +2,18 @@ export function patchDOM(
     oldNode: Node,
     newNode: Node
 ): void {
-    if (!oldNode || !newNode)
+    if (!oldNode || !newNode) return
 
-        // Replace if node types or node names differ
-        if (oldNode.nodeType !== newNode.nodeType || oldNode.nodeName !== newNode.nodeName) {
-            if (
-                oldNode.nodeType === Node.ELEMENT_NODE ||
-                oldNode.nodeType === Node.TEXT_NODE
-            ) {
-                (oldNode as Element | Text).replaceWith(newNode.cloneNode(true))
-            }
-            return
+    // Replace if node types or node names differ
+    if (oldNode.nodeType !== newNode.nodeType || oldNode.nodeName !== newNode.nodeName) {
+        if (
+            oldNode.nodeType === Node.ELEMENT_NODE ||
+            oldNode.nodeType === Node.TEXT_NODE
+        ) {
+            (oldNode as Element | Text).replaceWith(newNode.cloneNode(true))
         }
+        return
+    }
 
     // Update text content for text nodes
     if (oldNode.nodeType === Node.TEXT_NODE && newNode.nodeType === Node.TEXT_NODE) {
@@ -27,12 +27,33 @@ export function patchDOM(
         return
     }
 
-    // If we're here, assume ELEMENT_NODEs
+    // Assume ELEMENT_NODE from here
     if (oldNode.nodeType === Node.ELEMENT_NODE && newNode.nodeType === Node.ELEMENT_NODE) {
         const oldEl = oldNode as HTMLElement
         const newEl = newNode as HTMLElement
 
-        // Update attributes
+        // --- NEW: Check for differences in data-* attributes ---
+        for (let i = 0; i < newEl.attributes.length; i++) {
+            const attr = newEl.attributes[i]
+            if (attr.name.startsWith('data-')) {
+                const oldVal = oldEl.getAttribute(attr.name)
+                if (oldVal !== attr.value) {
+                    // Replace whole node if any data-* attribute differs
+                    oldEl.replaceWith(newEl.cloneNode(true))
+                    return
+                }
+            }
+        }
+        // Also check if oldEl has any data-* attribute not present in newEl
+        for (let i = 0; i < oldEl.attributes.length; i++) {
+            const attr = oldEl.attributes[i]
+            if (attr.name.startsWith('data-') && !newEl.hasAttribute(attr.name)) {
+                oldEl.replaceWith(newEl.cloneNode(true))
+                return
+            }
+        }
+
+        // Update attributes (non data-* already handled by above check)
         const oldAttrs = oldEl.attributes
         const newAttrs = newEl.attributes
 
@@ -52,6 +73,7 @@ export function patchDOM(
             }
         }
 
+        // Update input value (for inputs inside the element)
         if ((oldEl as HTMLInputElement).value !== (newEl as HTMLInputElement).value) {
             (oldEl as HTMLInputElement).value = (newEl as HTMLInputElement).value
         }
