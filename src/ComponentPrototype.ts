@@ -47,10 +47,12 @@ export class ComponentPrototype {
 
         if (this.globalStylesheets) {
             for (const href of this.globalStylesheets) {
-                const link = document.createElement('link')
-                link.rel = 'stylesheet'
-                link.href = href
-                this.shadow.appendChild(link)
+                if (!this.shadow.querySelector(`link[href="${href}"]`)) {
+                    const link = document.createElement('link')
+                    link.rel = 'stylesheet'
+                    link.href = href
+                    this.shadow.appendChild(link)
+                }
             }
         }
 
