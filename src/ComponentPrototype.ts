@@ -158,7 +158,7 @@ export class ComponentPrototype {
     }
 
     private setExternalListeners(): void {
-        this.log('Setting external listeners...')
+        this.log('Setting external listeners')
 
         for (const handler of this.externalHandlers) {
             Events.unlisten(handler.key, handler.handler)
