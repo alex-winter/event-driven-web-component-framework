@@ -61,4 +61,12 @@ export abstract class Component extends HTMLElement {
     public get parsedDataset(): ParsedDataset {
         return this.#delegate.parsedDataset
     }
+
+    public get debug(): boolean {
+        return this.#delegate.debug
+    }
+
+    public set debug(value: boolean) {
+        this.#delegate.debug = value
+    }
 }
