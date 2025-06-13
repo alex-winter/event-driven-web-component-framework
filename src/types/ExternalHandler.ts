@@ -1,6 +1,6 @@
-import { EventFn } from './EventFn'
+import { ExternalEventFn } from './ExternalEventFn'
 
 export type ExternalHandler = {
     key: string
-    handler: EventFn
+    handler: ExternalEventFn<any>
 }

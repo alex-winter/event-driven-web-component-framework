@@ -1,3 +1,3 @@
-import { EventFn } from './EventFn'
+import { ExternalEventFn } from './ExternalEventFn'
 
-export type ExternalListeners = Record<string, EventFn>
+export type ExternalListeners = Record<string, ExternalEventFn<any>>
