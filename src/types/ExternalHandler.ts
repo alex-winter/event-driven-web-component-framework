@@ -1,6 +1,6 @@
 import { EventFn } from './EventFn'
 
 export type ExternalHandler = {
-    key: symbol
+    key: string
     handler: EventFn
 }
