@@ -13,7 +13,7 @@ export class Events {
             this.activeEvents.add(key)
             try {
                 for (const listener of listeners) {
-                    console.log(`[Events.emit] Executing listener for "${key}"`, listener.toString().slice(0, 100)) // print function snippet
+                    console.log(`[Events.emit] Executing listener for  "${key}"`, listener.toString().slice(0, 100))
                     try {
                         (listener as ExternalEventFn<T>)(payload)
                     } catch (err) {
