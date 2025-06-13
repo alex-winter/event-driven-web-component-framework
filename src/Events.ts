@@ -1,64 +1,27 @@
-import { EventFn } from './types/EventFn'
+type EventKey = symbol
+type EventFn<T> = (payload: T) => void
 
 export class Events {
-    constructor() {
-        throw new Error('This service is static only, can not be constructed')
+    private static listenersMap: Map<EventKey, Set<Function>> = new Map()
+
+    static emit<T>(key: EventKey, payload: T): void {
+        const listeners = this.listenersMap.get(key)
+        if (listeners) {
+            for (const listener of listeners) {
+                (listener as EventFn<T>)(payload)
+            }
+        }
     }
 
-    private static listenersMap: Map<string, Set<EventListener>> = new Map()
-
-    public static emit<T>(
-        key: string,
-        detail: T | undefined = undefined,
-    ): void {
-        document.dispatchEvent(
-            new CustomEvent<T>(
-                key,
-                {
-                    detail,
-                    bubbles: false,
-                    composed: true,
-                }
-            )
-        )
-    }
-
-    public static listen<T>(
-        key: string,
-        callback: EventFn<T>,
-    ): void {
-        const eventListener = callback as EventListener
-
-        this.addListener(key, eventListener)
-
+    static listen<T>(key: EventKey, callback: EventFn<T>): void {
         if (!this.listenersMap.has(key)) {
-            this.listenersMap.set(
-                key,
-                new Set(),
-            )
+            this.listenersMap.set(key, new Set())
         }
 
-        this.listenersMap.get(key)!.add(eventListener)
+        this.listenersMap.get(key)!.add(callback)
     }
 
-    private static addListener<T>(
-        key: string,
-        callback: EventFn<T>,
-    ): void {
-        document.addEventListener(
-            key,
-            callback as EventListener,
-        )
-    }
-
-    public static unlisten<T>(
-        key: string,
-        callback: EventFn<T>,
-    ): void {
-        const eventListener = callback as EventListener
-
-        document.removeEventListener(key, eventListener)
-
-        this.listenersMap.get(key)?.delete(eventListener)
+    static unlisten<T>(key: EventKey, callback: EventFn<T>): void {
+        this.listenersMap.get(key)?.delete(callback)
     }
 }
