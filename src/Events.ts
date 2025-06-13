@@ -8,6 +8,7 @@ export class Events {
         if (this.activeEvents.has(key)) return
 
         const listeners = this.listenersMap.get(key)
+        console.log(listeners)
         if (listeners) {
             this.activeEvents.add(key)
             try {
