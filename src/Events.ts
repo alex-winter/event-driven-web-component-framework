@@ -13,8 +13,8 @@ export class Events {
             this.activeEvents.add(key)
             try {
                 for (const listener of listeners) {
-                    console.log(`[Events.emit] Executing listener for "${key}"`);
-                    (listener as ExternalEventFn<T>)(payload)
+                    console.log(`[Events.emit] Executing listener for "${key}"`)
+                    // (listener as ExternalEventFn<T>)(payload)
                 }
             } finally {
                 this.activeEvents.delete(key)
