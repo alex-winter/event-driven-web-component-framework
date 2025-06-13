@@ -2,13 +2,21 @@ import { ExternalEventFn } from './types/ExternalEventFn'
 
 export class Events {
     private static listenersMap: Map<string, Set<Function>> = new Map()
+    private static activeEvents: Set<string> = new Set()
 
     static emit<T>(key: string, payload: T): void {
+        if (this.activeEvents.has(key)) return
+
         const listeners = this.listenersMap.get(key)
         if (listeners) {
-            for (const listener of listeners) {
-                console.log(`[Events.emit] Executing listener for "${key}"`);
-                (listener as ExternalEventFn<T>)(payload)
+            this.activeEvents.add(key)
+            try {
+                for (const listener of listeners) {
+                    console.log(`[Events.emit] Executing listener for "${key}"`);
+                    (listener as ExternalEventFn<T>)(payload)
+                }
+            } finally {
+                this.activeEvents.delete(key)
             }
         }
     }
