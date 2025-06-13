@@ -1,14 +1,16 @@
+type EventFn<T = any> = (payload: T) => void
 type EventKey = symbol
-type EventFn<T> = (payload: T) => void
 
 export class Events {
-    private static listenersMap: Map<EventKey, Set<Function>> = new Map()
+    private static listenersMap: Map<EventKey, Set<EventFn<any>>> = new Map()
 
     static emit<T>(key: EventKey, payload: T): void {
         const listeners = this.listenersMap.get(key)
         if (listeners) {
             for (const listener of listeners) {
-                (listener as EventFn<T>)(payload)
+                try {
+                    listener(payload)
+                } catch { }
             }
         }
     }
@@ -17,11 +19,10 @@ export class Events {
         if (!this.listenersMap.has(key)) {
             this.listenersMap.set(key, new Set())
         }
-
-        this.listenersMap.get(key)!.add(callback)
+        this.listenersMap.get(key)!.add(callback as EventFn<any>)
     }
 
     static unlisten<T>(key: EventKey, callback: EventFn<T>): void {
-        this.listenersMap.get(key)?.delete(callback)
+        this.listenersMap.get(key)?.delete(callback as EventFn<any>)
     }
 }

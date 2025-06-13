@@ -1,5 +1,3 @@
 import { EventFn } from './EventFn'
 
-export type ExternalListeners = {
-    [key: string]: EventFn
-}
+export type ExternalListeners = Record<symbol, EventFn>

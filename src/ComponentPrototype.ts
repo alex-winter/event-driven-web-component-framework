@@ -162,12 +162,13 @@ export class ComponentPrototype {
 
         for (const handler of this.externalHandlers) {
             Events.unlisten(handler.key, handler.handler)
-            this.log(`Removed external listener for event "${handler.key}"`)
+            this.log(`Removed external listener for event "${handler.key.toString()}"`)
         }
 
         this.externalHandlers = []
 
-        for (const key of Object.keys(this.externalListeners)) {
+        const keys = Object.getOwnPropertySymbols(this.externalListeners)
+        for (const key of keys) {
             const boundHandler = this.externalListeners[key].bind(this.anchor)
 
             Events.listen(key, boundHandler)
@@ -175,7 +176,7 @@ export class ComponentPrototype {
                 key,
                 handler: boundHandler,
             })
-            this.log(`Attached external listener for event "${key}"`)
+            this.log(`Attached external listener for event "${key.description ?? key.toString()}"`)
         }
 
         this.log('External listeners set')
