@@ -7,6 +7,7 @@ export class Events {
         const listeners = this.listenersMap.get(key)
         if (listeners) {
             for (const listener of listeners) {
+                console.log(`[Events.emit] Executing listener for "${key}"`);
                 (listener as ExternalEventFn<T>)(payload)
             }
         }
