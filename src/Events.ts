@@ -1,40 +1,41 @@
 import { ExternalEventFn } from './types/ExternalEventFn'
 
 export class Events {
-    private static listenersMap: Map<string, Set<Function>> = new Map()
-    private static activeEvents: Set<string> = new Set()
+    private static listeners: { [key: string]: ExternalEventFn<any>[] } = {};
 
-    static emit<T>(key: string, payload: T): void {
-        if (this.activeEvents.has(key)) return
-
-        const listeners = this.listenersMap.get(key)
-        console.log('listeners', listeners)
-        if (listeners) {
-            this.activeEvents.add(key)
-            try {
-                for (const listener of listeners) {
-                    console.log(`[Events.emit] Executing listener for  "${key}"`, listener.toString().slice(0, 100))
-                    try {
-                        (listener as ExternalEventFn<T>)(payload)
-                    } catch (err) {
-                        console.error(`[Events.emit] Error in listener for "${key}":`, err)
-                    }
-                }
-            } finally {
-                this.activeEvents.delete(key)
+    public static emit<T>(
+        key: string,
+        payload: T,
+    ): void {
+        const callbacks: ExternalEventFn<T>[] = this.listeners[key]
+        if (callbacks) {
+            for (const listener of callbacks) {
+                console.log(key, listener)
+                listener(payload)
             }
         }
     }
 
-    static listen<T>(key: string, callback: ExternalEventFn<T>): void {
-        if (!this.listenersMap.has(key)) {
-            this.listenersMap.set(key, new Set())
+    public static listen<T>(
+        key: string,
+        callback: ExternalEventFn<T>,
+    ): void {
+        if (!this.listeners[key]) {
+            this.listeners[key] = []
         }
-
-        this.listenersMap.get(key)!.add(callback)
+        this.listeners[key].push(callback)
     }
 
-    static unlisten<T>(key: string, callback: ExternalEventFn<T>): void {
-        this.listenersMap.get(key)?.delete(callback)
+    public static unlisten<T>(
+        key: string,
+        callback: ExternalEventFn<T>,
+    ): void {
+        const callbacks = this.listeners[key]
+
+        if (!callbacks) {
+            return
+        }
+
+        this.listeners[key] = callbacks.filter(fn => fn !== callback)
     }
 }
