@@ -10,7 +10,6 @@ export class Events {
         const callbacks: ExternalEventFn<T>[] = this.listeners[key]
         if (callbacks) {
             for (const listener of callbacks) {
-                console.log(key, listener)
                 listener(payload)
             }
         }
