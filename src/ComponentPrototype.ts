@@ -1,6 +1,6 @@
+import morphdom from 'morphdom'
 import { Events } from './Events'
 import { isJSON } from './is-json'
-import { patchDOM } from './patch-dom'
 import { ExternalHandler } from './types/ExternalHandler'
 import { ExternalListeners } from './types/ExternalListeners'
 import { Listener } from './types/Listener'
@@ -117,7 +117,7 @@ export class ComponentPrototype {
             throw new Error(errMsg)
         }
 
-        patchDOM(nonLinkChildren[0], this.build())
+        morphdom(nonLinkChildren[0], this.build())
         this.log('DOM patched')
 
         this.setListeners()
