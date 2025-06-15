@@ -66,15 +66,28 @@ export class ComponentPrototype {
         }
 
         if (this.globalStylesheets) {
-            for (const href of this.globalStylesheets) {
-                if (!this.shadow.querySelector(`link[href="${href}"]`)) {
+            const loadPromises = this.globalStylesheets.map(href => {
+                return new Promise<void>((resolve) => {
+                    if (this.shadow.querySelector(`link[href="${href}"]`)) {
+                        return resolve()
+                    }
+
                     const link = document.createElement('link')
                     link.rel = 'stylesheet'
                     link.href = href
+                    link.onload = () => {
+                        this.log(`Loaded global stylesheet: ${href}`)
+                        resolve()
+                    }
+                    link.onerror = () => {
+                        this.log(`Failed to load stylesheet: ${href}`)
+                        resolve() // still resolve to avoid hanging
+                    }
                     this.shadow.appendChild(link)
-                    this.log(`Appended global stylesheet: ${href}`)
-                }
-            }
+                })
+            })
+
+            await Promise.all(loadPromises)
         }
 
         this.log('Setup starting...')

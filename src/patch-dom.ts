@@ -32,7 +32,7 @@ export function patchDOM(
         const oldEl = oldNode as HTMLElement
         const newEl = newNode as HTMLElement
 
-        // --- NEW: Check for differences in data-* attributes ---
+        // --- Check for differences in data-* attributes ---
         for (let i = 0; i < newEl.attributes.length; i++) {
             const attr = newEl.attributes[i]
             if (attr.name.startsWith('data-')) {
