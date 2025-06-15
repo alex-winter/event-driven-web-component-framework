@@ -8,8 +8,8 @@ export function patchDOM(oldNode: Node, newNode: Node): void {
         if (!parent) return
 
         if (oldEl instanceof Element) {
-            oldEl.style.transition = `opacity ${fadeDuration}ms`
-            oldEl.style.opacity = '0'
+            (oldEl as HTMLElement).style.transition = `opacity ${fadeDuration}ms`;
+            (oldEl as HTMLElement).style.opacity = '0'
 
             setTimeout(() => {
                 const clone = newEl.cloneNode(true) as HTMLElement
