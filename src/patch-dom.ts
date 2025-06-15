@@ -10,8 +10,8 @@ export function patchDOM(
             oldNode.nodeType === Node.TEXT_NODE
         ) {
             const replacement = newNode.cloneNode(true)
-            preserveState(oldNode as Element, replacement as Element)
-            oldNode.replaceWith(replacement)
+            preserveState(oldNode as Element, replacement as Element);
+            (oldNode as ChildNode).replaceWith(replacement)
         }
         return
     }
