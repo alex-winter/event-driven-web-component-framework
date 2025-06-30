@@ -1,16 +1,20 @@
 import { isJSON } from './is-json'
 
-export function decode(input: string) {
-
+function parseJson(input: string) {
     if (isJSON(input)) {
-        try {
-            const decoded = decodeURIComponent(input)
-
-            return JSON.parse(decoded)
-        } catch {
-            return JSON.parse(input)
-        }
+        return JSON.parse(input)
     }
 
     return input
+}
+
+export function decode(input: string) {
+
+    try {
+        const decoded = decodeURIComponent(input)
+
+        return parseJson(decoded)
+    } catch {
+        return parseJson(input)
+    }
 }
