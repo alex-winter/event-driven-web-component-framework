@@ -1,5 +1,5 @@
+import { decode } from './decode-dataset'
 import { Events } from './Events'
-import { isJSON } from './is-json'
 import { patchDOM } from './patch-dom'
 import { ExternalHandler } from './types/ExternalHandler'
 import { ExternalListeners } from './types/ExternalListeners'
@@ -59,9 +59,7 @@ export class ComponentPrototype {
 
         for (const key of Object.keys(this.anchor.dataset)) {
             const value = this.anchor.dataset[key] as string
-            this.parsedDataset[key] = isJSON(value)
-                ? JSON.parse(value as string)
-                : value
+            this.parsedDataset[key] = decode(value)
             this.log(`Parsed dataset key="${key}":`, this.parsedDataset[key])
         }
 
