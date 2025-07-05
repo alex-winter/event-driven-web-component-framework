@@ -1,5 +1,6 @@
 import { decode } from './decode-dataset'
 import { Events } from './Events'
+import { getGlobalStyleSheet } from './GlobalStyleRegistry'
 import { patchDOM } from './patch-dom'
 import { ExternalHandler } from './types/ExternalHandler'
 import { ExternalListeners } from './types/ExternalListeners'
@@ -20,7 +21,6 @@ export class ComponentPrototype {
 
     public globalStylesheets?: string[]
 
-    // Debug mode flag
     private _debug: boolean = false
 
     public get debug(): boolean {
@@ -63,42 +63,29 @@ export class ComponentPrototype {
             this.log(`Parsed dataset key="${key}":`, this.parsedDataset[key])
         }
 
-        if (this.globalStylesheets) {
-            const loadPromises = this.globalStylesheets.map(href => {
-                return new Promise<void>((resolve) => {
-                    if (this.shadow.querySelector(`link[href="${href}"]`)) {
-                        return resolve()
-                    }
-
-                    const link = document.createElement('link')
-                    link.rel = 'stylesheet'
-                    link.href = href
-                    link.onload = () => {
-                        this.log(`Loaded global stylesheet: ${href}`)
-                        resolve()
-                    }
-                    link.onerror = () => {
-                        this.log(`Failed to load stylesheet: ${href}`)
-                        resolve() // still resolve to avoid hanging
-                    }
-                    this.shadow.appendChild(link)
-                })
-            })
-
-            await Promise.all(loadPromises)
-        }
-
         this.log('Setup starting...')
         await this.setup()
         this.log('Setup complete')
+
+        const sheets: CSSStyleSheet[] = []
+
+        if (this.globalStylesheets) {
+            for (const cssText of this.globalStylesheets) {
+                const sheet = getGlobalStyleSheet(cssText)
+                sheets.push(sheet)
+                this.log('Global stylesheet adopted')
+            }
+        }
 
         const cssText = this.css().trim()
         if (cssText.length > 0) {
             const sheet = new CSSStyleSheet()
             sheet.replaceSync(cssText)
-            this.shadow.adoptedStyleSheets = [sheet]
-            this.log('Adopted stylesheets set')
+            sheets.push(sheet)
+            this.log('Component stylesheet adopted')
         }
+
+        this.shadow.adoptedStyleSheets = sheets
 
         this.shadow.appendChild(this.build())
         this.log('Component built and appended')
@@ -120,10 +107,9 @@ export class ComponentPrototype {
         this.log('patch() called')
 
         const nonLinkChildren = Array.from(this.shadow.children)
-            .filter(child => child.tagName !== 'LINK')
 
         if (nonLinkChildren.length !== 1) {
-            const errMsg = 'Shadow root must contain exactly one non-link root element'
+            const errMsg = 'Shadow root must contain exactly one root element'
             this.log(errMsg)
             throw new Error(errMsg)
         }
