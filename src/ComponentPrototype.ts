@@ -72,7 +72,7 @@ export class ComponentPrototype {
         this.log(this.globalStylesheets)
         if (this.globalStylesheets) {
             for (const cssText of this.globalStylesheets) {
-                const sheet = getGlobalStyleSheet(cssText)
+                const sheet = await getGlobalStyleSheet(cssText)
                 sheets.push(sheet)
                 this.log('Global stylesheet adopted', sheet)
             }
