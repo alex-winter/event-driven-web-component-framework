@@ -69,11 +69,12 @@ export class ComponentPrototype {
 
         const sheets: CSSStyleSheet[] = []
 
+        this.log(this.globalStylesheets)
         if (this.globalStylesheets) {
             for (const cssText of this.globalStylesheets) {
                 const sheet = getGlobalStyleSheet(cssText)
                 sheets.push(sheet)
-                this.log('Global stylesheet adopted')
+                this.log('Global stylesheet adopted', cssText)
             }
         }
 
